@@ -3,7 +3,8 @@
 Secara defult dia bahkan tidak tahu cara ngeprint tulisan ke layar.
 fungsinya baris ini membantu memberitahu compiler untuk mengambil file bernama input-output stream
 isinya berupa file logika tentang cout (untuk print) dan cin (untuk input)
-using namespace std; */
+
+//using namespace std; */
 
 #include <string>// tipe data string bukan bawaan asli c++, makanya perlu kita panggil dulu
 #include <initializer_list>
@@ -26,8 +27,12 @@ void nama(std :: string nama, int umur){
     std :: cout << "Hallo "<< nama << ", Selamat masuk umur " << umur <<std :: endl;
 }
 
+/*
+=====
+Tugas function
+=====*/
 //function membalikkan nilai
-int luas_pesergiPNjng (int tinggi, int lebar){
+float luas_pesergiPNjng (int tinggi, int lebar){
     int luas = tinggi*lebar;
     return luas;
 }
