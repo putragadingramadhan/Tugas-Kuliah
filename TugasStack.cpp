@@ -29,42 +29,6 @@ void push(int s) {
     top++;
 }
 
-void input() {
-    int s;
-    int counter = 1; // Agar user tahu ini input data ke-berapa
-
-    while (true) {
-        cout << "\nInput ke-" << counter << endl;
-        cout << "Masukkan panjang jalan: ";
-        cin >> s;
-
-        // selesai jika user input 999
-        if (s == 999) {
-            cout << "Input dihentikan (999)." << endl;
-            break; 
-        }
-
-        // jika input >= 60, data di simpan
-        if (s >= 60) {
-            if (isFull()) {
-                cout << "Stack Penuh! Tidak bisa simpan " << s << endl;
-                break; // penuh = selesai
-            } else {
-                push(s); //tambahka data ke stack
-                cout << "Data " << s << " berhasil disimpan ke Stack." << endl;
-                counter++; // tambah nomor urut input hanya jika berhasil simpan
-            }
-        } 
-        // inputan <60, keluarkan isi data dan berhentika program
-        else {
-            cout << "Input < 60 terdeteksi." << endl;
-            pop(); // Jalankan output dulu 
-            cout << "Program dihentikan karena input kurang dari 60." << endl;
-            break; 
-        }
-    }
-}
-
 void display() {
     if (isEmpty()) {
         cout << "\nStack sekarang kosong." << endl;
@@ -75,7 +39,53 @@ void display() {
         }
     }
 }
+void input() {
+    int s;
+    int counter = 1; // Agar user tahu ini input data ke-berapa
 
+    while (true) {
+        cout << "\nInput ke-" << counter << endl;
+        cout << "Masukkan panjang jalan: ";
+        cin >> s;
+
+        
+        // selesai jika user input nilai 999, dan  999 tidak akan di simpan ke stack
+        if (s == 999) {
+            cout << "Input dihentikan (999)." << endl;
+            break; 
+        }
+
+        // jika input >= 60, data di simpan
+        else if (s >= 60) {
+            if (isFull()) {
+                cout << "Stack Penuh! Tidak bisa simpan " << s << endl;
+                break; // penuh = selesai
+            } else {
+                push(s); //tambahka data ke stack
+                cout << "Data " << s << " berhasil disimpan ke Stack." << endl;
+                counter++; // tambah nomor urut input hanya jika berhasil simpan
+            }
+        } 
+        // inputan <60, keluarkan isi data dan berhentika program
+        else{
+            cout<<"Input <60, terdeteksi"<<endl;
+            // push(s);
+            if(isEmpty()){
+                cout<<"Stack kosong.\nPorgram bertenti"<<endl;
+                break;
+            }else{
+                cout<<"Data sementara ditampilkan"<<endl;
+                // push(s);
+                display();
+                // counter ++;
+                continue;
+                // break;
+            }
+            
+
+        }
+    }
+}
 int main() {
     input();
     display();
