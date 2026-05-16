@@ -34,7 +34,7 @@ int count(){
     }
     return jumlah; // kembalikan nilai jumlah
 }
-void enQueue(string data[3], int antrian){
+void enQueue(string data[3], int antrian, bool isEmergency){
     // jika reservasi pasien lebih dari 100, maka antrian penuh
     if(count()>100){ 
         cout<<"Antrian penuh"<<endl;
@@ -51,6 +51,12 @@ void enQueue(string data[3], int antrian){
     if(isEmpty()){
         front = rear = newData;
     }
+    // vitur emergency
+    else if(isEmergency == true){ // jika isEmergency bernilai true
+        newData->next = front; // newData berada di node ke berapa pun, akan langsung mrnjadi front
+        front = newData; // front sekarang menjadi newData
+        cout<<newData->nama<<" pasien emergency, harus ditangani dulu"<<endl; // cetak  ini
+    }
     // disini saya coba langsung melakukan sorting, yakni mengurutkan data berdasarkan nomor antrian pasien
     // di else if ini, kita sudah punya data front/head, lalu saya ingin membandingkan dengan semua data setelah head/front
     // jika setelah dibandingkan dengan front no antrian lebih kecil, maka Node tersebut yang akan jadi front
@@ -62,7 +68,7 @@ void enQueue(string data[3], int antrian){
         // baru urutkan  data setelahnya
         while(temp->next != NULL && temp->next->noAntrian<antrian){ //jika temp ke next Node masih ada data Node
             // dan temp ke Node berikutnya, jika no antrian lama lebih kecil dari nomor antrian di node berikutnya
-            temp = temp->next; // maka
+            temp = temp->next; // maka temp yang tadinya di front, berapa di node selanjutnya
         }
         // baru kita masukkan datanya
         newData->next = temp->next;
@@ -82,9 +88,9 @@ void deQueue(){
     }
     AntrianKlinik*temp = front; // buat variabel bayangan temp
     // cetak ini
-    cout<<"===Antrian Knilik Mandiraja==="<<endl;
+    cout<<"===========Antrian Knilik Mandiraja============="<<endl;
     cout<<"No antrian : "<<temp->noAntrian<<"\n\tNama : "<<temp->nama<<"\n\tAlamat : "<<temp->alamat<<"\n\tTanggal reservasi : "<<temp->tanggal<<endl;
-    cout<<"===No AAntrian"<<temp->noAntrian<<" Masuk keruangan dokter==="<<endl;
+    cout<<"=== Nomor antrian "<<temp->noAntrian<<" Masuk keruangan dokter==="<<endl;
     // abis itu frontnya kita pindah ke node berikutnya
     front = front->next;
     if(front == NULL){ //kalo frontnya after pindah tenyata NULL
@@ -93,95 +99,129 @@ void deQueue(){
     // temp menyimpan front lama, jadi kita langsung hapus aja
     delete temp;
 }
+// function ini berfungsi untuk menghabus semua data dan node yang telah dibuat
 void clear(){
+    // jika front tidak sama dengan null
     while(front != NULL){
-        AntrianKlinik*temp = front;
-        front = front->next;
-        delete temp;
+        AntrianKlinik*temp = front; // buat variabel bayangan temp, dengan nilai awal berapa di front
+        front = front->next; // frontnya kita geser terus ke node selanjutnya
+        delete temp; // temp tadi kan sebagai front, maka front-nya akan kita hapus
+        // lalu karena tadi frontny udah pindah ke Node selanjutnya, maka kita hapus lagi front (sebagai Node selanjutnya)
     }
-    rear = NULL;
-    cout<<"Seluruh antrian berhasil di hapus"<<endl;
+    rear = NULL; // karena nanti front akan null, maka kita perlu samakan rear-nya juga
+    cout<<"Seluruh antrian berhasil di hapus"<<endl; // cetak ini
 }
+// function Display berfungsi untuk menapilkan semua data yang ada di semua Node
 void Display(){
+    // cek dulu apakah kosong
     if(isEmpty()){
         cout<<"Data kosong"<<endl;
         return; // jika kosong program akan berhenti
     }
-    AntrianKlinik*temp = front;
-    cout<<"\n-----Data Antrian Klinik-----"<<endl;
-    cout<<"Jumlah antrian saat ini : "<<count()<<"\n"<<endl;
-    while(temp!=NULL){
+    AntrianKlinik*temp = front; // yaa kita buat lagi si temp, kek agak bosen denger-nya, next kita pakai cur aja la
+    cout<<"\n-----Data Antrian Klinik-----"<<endl; // cetak ini
+    cout<<"Jumlah antrian saat ini : "<<count()<<"\n"<<endl; // cetak ini
+    while(temp!=NULL){ // kalo temp-nya gk null
+        // cetak data di Node
         cout<<"No antrian : "<<temp->noAntrian<<"\n\tNama : "<<temp->nama<<"\n\tAlamat : "<<temp->alamat<<"\n\tTanggal reservasi : "<<temp->tanggal<<endl;
-        temp = temp->next;
+        temp = temp->next; // tadikan temp = front, nah sekarang temp = Node salnjutnya
     }
-    cout<<"-----------------------------"<<endl;
+    cout<<"-----------------------------"<<endl;// cetak ini
 }
-void searchQueueBYNumber(int cari_antrian){
+// function ini berfungsi agar resepsionis bisa mencari data pasien dengan nomor antrian
+void searchQueueBYNumber(int cari_antrian){ // dengan paramaeter cari_antrian
+    // yaa kita cek lagi apakah kita belum inputkan data
     if(isEmpty()){
         cout<<"Data kosong"<<endl;
         return; // jika kosong program akan berhenti
     }
-    AntrianKlinik*temp = front;
-    int posisi = 1;
-    while(temp!=NULL){
-        if(cari_antrian == temp->noAntrian){
-            cout<<"Data atas nama "<<cari_antrian<<" ditemukan"<<endl;
-            cout<<"\tNama : "<<temp->nama<<"\n\tBerada di urutan : "<<posisi<<endl;
-            return;
+    AntrianKlinik*temp = front; // temp lagi
+    // di sini saya ingin mengetahui pasien tadi itu tinggal menunggu berapa antrian lagi
+    int posisi = 0; // ini buat deklarasi awal ya
+    while(temp!=NULL){ // yaa aku gk perlu jelasin lagi
+        if(cari_antrian == temp->noAntrian){ // nah kalo no antrian yang dicari oleh reseprionis tadi
+            // sama dengan data yang sudah di input tadi, code berjalan
+            cout<<"Data atas nama "<<cari_antrian<<" ditemukan"<<endl;//cetak ini
+            cout<<"\tNama : "<<temp->nama<<"\n\tBerada di urutan : "<<posisi<<endl; // ini juga, untuk menampilkan nama dan antrian keberapa
+            return; // berhenti
         }
-        temp=temp->next;
-        posisi++;
+        temp=temp->next; // yaa kita next-kan si temp, more!
+        posisi++;// posisinya kita +1
     }
-    cout<<"Data atas nama "<<cari_antrian<<" tidak ditemukan"<<endl;
-    
+    cout<<"Data atas nama "<<cari_antrian<<" tidak ditemukan"<<endl; // kalo gk nemu, cetak ini
 }
-void searchQueueBYName(string cari_nama){
+// ini fungsinya mirip si ama yang tadi, tapi ini cari berdasarkan nama pasien
+void searchQueueBYName(string cari_nama){ // yaa bisa dilihat kalo parameternya cari_nama dengan tipe data string
+    // sama kek tadi
     if(isEmpty()){
         cout<<"Data kosong"<<endl;
         return; // jika kosong program akan berhenti
     }
-    AntrianKlinik*temp = front;
-    int posisi = 1;
-    while(temp!=NULL){
-        if(cari_nama == temp->nama){
-            cout<<"Data atas nama "<<cari_nama<<" ditemukan"<<endl;
-            cout<<"\tNama : "<<temp->nama<<"\n\tBerada di urutan : "<<posisi<<endl;
-            return;
+    AntrianKlinik*temp = front; // ini jg sama
+    int posisi = 0; // ini juga
+    while(temp!=NULL){ // ini juga sama
+        if(cari_nama == temp->nama){ // nah ini bedanya
+            // disini saat resepsionis masukkan nama pasien, lalu sama program nemu nama yang sama, code berjalan
+            cout<<"Data atas nama "<<cari_nama<<" ditemukan"<<endl; // cetak ini
+            cout<<"\tNama : "<<temp->nama<<"\n\tBerada di urutan : "<<posisi<<endl;// cetak nama, dan dia diantrian ke berapa
+            return; // berhenti
         }
-        temp=temp->next;
-        posisi++;
+        temp=temp->next; // temp lagi, malas ah
+        posisi++; // posisi +=1
     }
-    cout<<"Data atas nama "<<cari_nama<<" tidak ditemukan"<<endl;   
+    cout<<"Data atas nama "<<cari_nama<<" tidak ditemukan"<<endl;// kalo kondisi if gk memenuhi, cetak ini
 }
-void changeDataBYQueue(int cari_antrian){
+// jadi dalam beberapa kasus resepsionis bisa aja salah melakukan input data, atau pasienny yang salah ngomong
+// untuk itu, fitur ini coba aku kembangkan, yakni vitur mengubah data, dengan mencari nomor antrian
+void changeDataBYQueue(int cari_antrian){ // parameter nomor antrian
+    // kalo kosong
     if(isEmpty()){
         cout<<"Data kosong"<<endl;
         return; // jika kosong program akan berhenti
     }
-    AntrianKlinik*temp = front;
+    AntrianKlinik*temp = front; // temp and temp and temp
     
-    int posisi = 1;
-    while(temp!=NULL){
-        if(cari_antrian == temp->noAntrian){
-            cout<<"Data dengan nomor antrian "<<cari_antrian<<" ditemukan"<<endl;
-            
+    int posisi = 0; // ni juga sama kek tadi, agar reseprionis dan pasien tau kurang berapa antrian lagi
+    while(temp!=NULL){ // jika temp gk null
+        if(cari_antrian == temp->noAntrian){ // kita cek, apakah noAntrian yang di masukkan benar, kalo benar lanjut 
+            cout<<"Data dengan nomor antrian "<<cari_antrian<<" ditemukan"<<endl; // cetak ini
+            // melakukan input data yang baru
             cout<<"Input data baru"<<endl;
             string namaBaru,alamatBaru,tanggalBaru;
             cout<<"Nama pasien : ";getline(cin>>ws,namaBaru);
             cout<<"Alamat pasien (kabupaten) : ";getline(cin>>ws,alamatBaru);
             cout<<"Tanggal reservasi (dd/mm/yyyy) : ";getline(cin>>ws,tanggalBaru);
-            
+            //simpan ganti data lama, dengan data baru
             temp->nama = namaBaru;
             temp->alamat = alamatBaru;
             temp->tanggal = tanggalBaru;
-            cout<<"\tNama : "<<temp->nama<<"\n\tBerada di urutan : "<<posisi<<endl;
-            return;
+            cout<<"\tNama : "<<temp->nama<<"\n\tBerada di urutan : "<<posisi<<endl; // cetak ini
+            return; // kembalikan
         }
-        temp=temp->next;
-        posisi++;
+        temp=temp->next; // bosen ama temp
+        posisi++;// posisi +=1
     }
-    cout<<"Data atas nama "<<cari_antrian<<" tidak ditemukan"<<endl;
+    cout<<"Data atas nama "<<cari_antrian<<" tidak ditemukan"<<endl; // cetak ini
 }
+void Summary(){
+    if(isEmpty()){
+        cout<<"Data kosong"<<endl;
+        return;
+    }
+    AntrianKlinik*temp = front;
+    int jumlah = 0;
+    while(temp !=NULL){
+        temp = temp->next;
+        jumlah++;
+    }
+    cout<<"=======Ringkasan Data======="<<endl;
+    cout<<"Jumlah Antrian     : "<<jumlah<<endl;
+    cout<<"Pasien selanjutnya : "<<front->nama<<endl;
+    cout<<"Pasien terakhir    : "<<rear->nama<<endl;
+    cout<<"============================"<<endl;
+}
+
+// program utama
 int main(){
     // saya membuat fitur sandi sederhana sebagai pengaman
     string sandi = "KlinikWiddiyaPWT";
@@ -197,11 +237,12 @@ int main(){
             cout<<"3. Hapus semua data"<<endl;
             cout<<"4. Lihat semua data antrian"<<endl;
             cout<<"5. Cari data"<<endl;
-            cout<<"6. keluar"<<endl;
+            cout<<"6. Ubah data"<<endl;
+            cout<<"7. keluar"<<endl;
             cout<<"=================="<<endl;
 
             string pilihan;
-            cout<<"Silahkan pilih menu (1-6) : ";
+            cout<<"Silahkan pilih menu (1-7) : ";
             cin>>pilihan;
             if(pilihan == "1"){
                 string nama,alamat,tanggal;
@@ -213,8 +254,18 @@ int main(){
                 cout<<"No Antrian : ";
                 cin>>antrian;
 
+                char status;
+                cout<<"Pasien gawat darurat?(y/n) : ";cin>>status;
+
                 string data[3] = {nama,alamat,tanggal};
-                enQueue(data,antrian);
+                bool s;
+                if(status == 'y' || status == 'Y'){
+                    s = true;
+                    enQueue(data,antrian,s);
+                }else{
+                    s = false;
+                    enQueue(data,antrian,s);
+                }
 
             }else if(pilihan == "2"){
                 deQueue();
@@ -223,6 +274,7 @@ int main(){
                 clear();
             }else if(pilihan == "4"){
                 Display();
+                Summary();
             }else if(pilihan == "5"){
                 string cari;
                 cout<<"Cari berdasarkan (nama/noAntrian) : ";getline(cin>>ws,cari);
@@ -237,6 +289,11 @@ int main(){
                     searchQueueBYNumber(antrian);
                 }
             }else if(pilihan == "6"){
+                cout<<"Silahkan ubah data pasien yang sudah di masukkan sebelumnya"<<endl;
+                int antri;
+                cout<<"Nomor antrian : ";cin>>antri;
+                changeDataBYQueue(antri);
+            }else if(pilihan == "7"){
                 cout<<"Anda keluar dari program"<<endl;
                 break;
             }
